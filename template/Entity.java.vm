@@ -1,0 +1,38 @@
+package ${package}.entity;
+
+import com.baomidou.mybatisplus.annotation.*;
+import java.util.Date;
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+
+@TableName("${tableName}")
+public class ${className}{
+
+  #foreach ($column in $columns)
+  /**
+    * $column.comments
+    */
+  #if($column.columnName == $pk.columnName)
+  @TableId(type = IdType.AUTO)
+  #end
+  private $column.attrType $column.lowerAttrName;
+  #end
+
+
+#foreach($column in $columns)
+  #if($column.attrType.equals("boolean"))
+    #set($getprefix="is")
+  #else
+    #set($getprefix="get")
+  #end
+
+    public $column.attrType ${getprefix}${column.capitalName}(){
+        return $column.lowerAttrName;
+        }
+
+    public void set$column.capitalName ($column.attrType $column.lowerAttrName){
+        this.$column.lowerAttrName = $column.lowerAttrName;
+        }
+#end
+}

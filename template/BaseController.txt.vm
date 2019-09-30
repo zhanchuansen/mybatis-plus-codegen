@@ -1,0 +1,50 @@
+package ${package}.controller;
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.io.Serializable;
+
+public abstract class BaseControllers<T>{
+
+    protected abstract IService iService();
+
+    /**
+     * 通过id查询单条记录
+     * @param id
+     * @return R
+     */
+    @GetMapping("/get")
+    public ResponseEntity getById(@RequestParam("id") Serializable id){
+        return ResponseEntity.ok(iService().getById(id));
+    }
+
+    /**
+     * 新增记录
+     * @param t
+     * @return R
+     */
+    @PostMapping("/insert")
+    public ResponseEntity save(@RequestBody T t){
+        return ResponseEntity.ok(iService().save(t));
+    }
+
+    /**
+     * 修改记录
+     * @param t
+     * @return R
+     */
+    @PutMapping("/update")
+    public ResponseEntity update(@RequestBody T t){
+        return ResponseEntity.ok(iService().updateById(t));
+    }
+
+    /**
+     * 通过id删除一条记录
+     * @param id
+     * @return R
+     */
+    @DeleteMapping("/delete")
+    public ResponseEntity removeById(@RequestParam("id") Serializable id){
+        return ResponseEntity.ok(iService().removeById(id));
+    }
+}

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.suncompass.basic.codegen.mapper.TemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="templateMap" type="com.suncompass.basic.codegen.entity.dto.Template"></resultMap>
+
+    <sql id="sql_whereColumn">
+        <where>
+        <if test="t !=null">
+            <if test="t.id != null">and id=#{t.id}</if>
+            <if test="t.templateName != null">and templateName=#{t.templateName}</if>
+            <if test="t.templatePath != null">and templatePath=#{t.templatePath}</if>
+            <if test="t.fileName != null">and fileName=#{t.fileName}</if>
+            <if test="t.groupId != null">and groupId=#{t.groupId}</if>
+        </if>
+        </where>
+        order by id asc
+    </sql>
+
+    <select id="selectAll" resultMap="templateMap" parameterType="java.lang.String">
+        select * from template
+        <include refid="sql_whereColumn"/>
+        <if test="limit != null">
+            limit #{currentRecord},#{limit}
+        </if>
+    </select>
+
+    <!-- 查询行数 -->
+    <select id="count" resultType="java.lang.Long">
+        select count(*) from template
+        <include refid="sql_whereColumn"/>
+    </select>
+
+    <!-- 查询单个 -->
+    <select id="get" resultMap="templateMap">
+		select * from
+		template where id = #{t.id}
+	</select>
+
+    <!-- 添加 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert
+		into template values (#{id}, #{templateName},#{fileName}, #{templatePath}, #{groupId})
+	</insert>
+
+    <!-- 修改 -->
+    <update id="update">
+        update template
+        <set>
+            <if test="t.templateName != null">templateName=#{t.templateName},</if>
+            <if test="t.templatePath != null">templatePath=#{t.templatePath},</if>
+            <if test="t.fileName != null">fileName=#{t.fileName},</if>
+            <if test="t.groupId  != null">groupId=#{t.groupId},</if>
+        </set>
+        where id = #{t.id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delete">
+		delete from template
+		where id = #{t.id}
+	</delete>
+
+    <select id="getGroupIdAndTemplateName" resultMap="templateMap">
+        select * from template where groupId = #{groupId} and templateName=#{templateName}
+    </select>
+
+</mapper>

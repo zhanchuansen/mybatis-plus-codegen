@@ -1,0 +1,29 @@
+package ${package}.controller;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import ${package}.entity.${className};
+import ${package}.service.${className}Service;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+@RestController
+@RequestMapping("/${pathName}")
+public class ${className}Controller{
+
+  @Autowired
+  private ${className}Service ${classname}Service;
+
+  /**
+   * 简单分页查询
+   * @param page 分页对象
+   * @param ${classname} ${comments}
+   * @return
+   */
+  @RequestMapping("/list")
+  @ResponseBody
+  public ResponseEntity get${className}Page(Page<${className}> page, ${className} ${classname}) {
+    return ResponseEntity.ok(${classname}Service.get${className}Page(page,${classname}));
+  }
+
+}

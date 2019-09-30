@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suncompass.basic.codegen.mapper.DbConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="dbConfigMap" type="com.suncompass.basic.codegen.entity.dto.DbConfig"></resultMap>
+
+    <sql id="sql_whereColumn">
+        <where>
+        <if test="t !=null">
+            <if test="t.ip != null"> and ip=#{t.ip}</if>
+            <if test="t.database !=null">and `database`=#{t.database}</if>
+            <if test="t.username !=null">and username=#{t.username}</if>
+            <if test="t.dbType !=null">and `dbType`=#{t.dbType}</if>
+        </if>
+        </where>
+    </sql>
+
+    <select id="selectAll" resultMap="dbConfigMap" parameterType="java.lang.String">
+        select * from dbconfig
+        <include refid="sql_whereColumn"/>
+        <if test="limit != null">
+            limit #{currentRecord},#{limit}
+        </if>
+    </select>
+
+    <!-- 查询行数 -->
+    <select id="count" resultType="java.lang.Long">
+        select count(*) from dbconfig
+        <include refid="sql_whereColumn"/>
+    </select>
+
+    <!-- 查询单个 -->
+    <select id="get" resultMap="dbConfigMap">
+		select * from
+		dbconfig where id = #{t.id}
+	</select>
+
+    <!-- 添加 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert
+		into dbconfig values (#{id}, #{dbType}, #{ip}, #{port}, #{database}, #{username},#{password}, #{characterEncoding})
+	</insert>
+
+    <!-- 修改 -->
+    <update id="update">
+        update dbconfig
+        <set>
+            <if test="t.dbType!=null">dbType=#{t.dbType},</if>
+            <if test="t.ip!=null">ip=#{t.ip},</if>
+            <if test="t.port!=0">`port`=#{t.port},</if>
+            <if test="t.database!=null">`database`=#{t.database},</if>
+            <if test="t.username!=null">username=#{t.username},</if>
+            <if test="t.password!=null">`password`=#{t.password},</if>
+            <if test="t.characterEncoding!=null">characterEncoding=#{t.characterEncoding},</if>
+        </set>
+        where id = #{t.id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delete">
+		delete from dbconfig
+		where id = #{t.id}
+	</delete>
+
+    <select id="getPortAndDatabase" resultMap="dbConfigMap">
+        select * from dbconfig where `port` = #{port} and `database`=#{database}
+    </select>
+</mapper>

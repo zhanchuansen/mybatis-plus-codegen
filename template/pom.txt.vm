@@ -1,0 +1,14 @@
+需注意已下几点
+
+一、pom.xml导入以下驱动包：
+    mysql连接驱动包(建议8.0以上的版本)
+	mybatis-plus集成驱动包
+	mabtis-plus-generator代码生成驱动包
+
+
+二、修改application.yml配置
+    mybatis-plus:
+      mapper-locations: classpath:mapper/*.xml   #加载映射文件
+
+三、在启动程序添加该注解
+    @MapperScan    #扫描mapper文件

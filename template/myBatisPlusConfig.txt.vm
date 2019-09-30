@@ -1,0 +1,17 @@
+/**
+ * mybatis-plus实现物理分页需建立插件
+ * 如下所示 放入到所建立的工程当中
+ */
+
+@Configuration
+public class MybatisPlusConfig {
+    /**
+     *mybatis-plus分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor page = new PaginationInterceptor();
+        page.setDialectType("mysql");
+        return page;
+    }
+}

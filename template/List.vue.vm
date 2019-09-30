@@ -1,0 +1,133 @@
+#set($a=0)
+#set($b=0)
+
+<template>
+  <div>
+    <list-page ref="listpage"
+               searchMore
+               :getDateList="getDataList"
+               :total="total"
+               @search="getDataList(1, 10)"
+               @add="edit">
+      <template slot="search">
+        #foreach($column in $columns)
+          #if($column.lowerAttrName!='id'&&$column.lowerAttrName!='created'&&$column.lowerAttrName!='updated')
+            #if($a<2)
+              #if($column.attrType.equals("Date"))
+                <el-form-item label="$column.comments:">
+                  <el-date-picker v-model="conidtion.$column.lowerAttrName"
+                                  type="daterange"
+                                  align="right"
+                                  unlink-panels
+                                  range-separator="至"
+                                  start-placeholder="开始日期"
+                                  end-placeholder="结束日期"
+                                  :default-time="['00:00:00','23:59:59']"></el-date-picker>
+                </el-form-item>
+              #else
+                <el-form-item label="$column.comments:">
+                  <el-input v-model="conidtion.$column.lowerAttrName"
+                            placeholder="请输入$column.comments"></el-input>
+                </el-form-item>
+              #end
+              #set($a=$a+1)
+            #end
+          #end
+        #end
+      </template>
+      <template slot="searchMore">
+        #foreach($column in $columns)
+          #if($column.lowerAttrName!='id'&&$column.lowerAttrName!='created'&&$column.lowerAttrName!='updated')
+              #if($b>2)
+                <el-form-item label="$column.comments:">
+                  <el-input v-model="conidtion.$column.lowerAttrName"
+                            placeholder="请输入$column.comments"></el-input>
+                </el-form-item>
+              #end
+            #set($b=$b+1)
+          #end
+        #end
+      </template>
+      <template>
+        <el-table :data="tableData"
+                  v-show-column:[$route]="hideColumns"
+                  @row-click="(row)=>{edit({id:row.id,disabled:true})}"
+                  size="small"
+                  style="width: 100%">
+          #foreach($column in $columns)
+            #if($column.lowerAttrName!='id'&&$column.lowerAttrName!='created'&&$column.lowerAttrName!='updated')
+              <el-table-column prop="$column.lowerAttrName"
+                               label="$column.comments"
+                               v-if="!hideColumns.$column.lowerAttrName"
+                #if($column.attrType=='Date')
+                               :formatter="columnFormatDate"
+                #end
+                               min-width="180">
+              </el-table-column>
+            #end
+          #end
+          <el-table-column fixed="right"
+                           width="100"
+                           label="操作">
+            <template slot-scope="scope">
+              <ActionIcon @edit="edit({id:scope.row.id})"
+                          @del="del(scope.row.id)"></ActionIcon>
+            </template>
+          </el-table-column>
+          <column-choose v-model="showColumnChoose"></column-choose>
+        </el-table>
+      </template>
+    </list-page>
+    <detail-info :params="params"
+                 v-if="showDetail"
+                 @close="showDetail=false"></detail-info>
+  </div>
+</template>
+
+<script>
+  import DetailInfo from "./${className}Detail";
+  export default {
+      components: {DetailInfo},
+      data() {
+        return {
+          params: {},
+          hideColumns: [],
+          showColumnChoose: false,
+          showDetail: false,
+          conidtion: {},
+          url: {
+            del: "/xz/${className}/delete",
+            getList: "/xz/${className}/list"
+          },
+          total: 0,
+          tableData: []
+        };
+      },
+      methods: {
+        async getDataList(page, size) {
+          this.conidtion.page = page;
+          this.conidtion.size = size;
+          let result = await this.$postAction(this.url.getList, this.conidtion);
+          this.tableData = result.records;
+          this.total = result.count;
+       },
+        edit(params = {}) {
+          console.log(params);
+          this.params = params;
+          this.showDetail = true;
+        },
+        async del(id){
+          await this.$deleteAction(this.url.del,  {id: id});
+          this.$message({
+            showClose: true,
+            message: "操作成功！",
+            type: "success"
+          });
+          this.$refs.listpage.refresh();
+        }
+     }
+  }
+</script>
+
+<style>
+</style>

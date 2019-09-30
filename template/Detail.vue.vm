@@ -1,0 +1,96 @@
+<template>
+  <detail-page v-model="showDetail"
+               :isDialog="isDialog"
+               :disabled="params.disabled"
+               @close="$emit('close')"
+               @save="save">
+    <el-form :model="dataInfo"
+             :disabled="params.disabled"
+             ref="refInfo"
+             :rules="rules"
+             label-width="120px"
+             size="small"
+             status-icon>
+
+        #foreach($column in $columns)
+          #if($column.lowerAttrName!='id'&&$column.lowerAttrName!='created'&&$column.lowerAttrName!='updated')
+            <el-form-item label="$column.comments:" porp="$column.lowerAttrName">
+              #if($column.attrType.equals("Date"))
+                <el-date-picker
+                        v-model="dataInfo.$column.lowerAttrName" type="datetime"
+                        placeholder="请输入$column.comments">
+                </el-date-picker>
+              #elseif($column.attrType.equals("Integer"))
+                <el-input v-model.number="dataInfo.$column.lowerAttrName" type="number"
+                         placeholder="请输入$column.comments"></el-input>
+              #elseif($column.attrType.equals("Boolean"))
+                <el-switch v-model.number="dataInfo.$column.lowerAttrName"
+                        active-text="是"
+                        inactive-text="否">
+                </el-switch>
+              #else
+                <el-input v-model="dataInfo.$column.lowerAttrName"
+                          placeholder="请输入$column.comments"></el-input>
+              #end
+            </el-form-item>
+         #end
+        #end
+    </el-form>
+  </detail-page>
+</template>
+
+<script>
+  export default {
+    props: {
+      params: {
+        type: Object,
+        default: () => {}
+    },
+    isDialog: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data() {
+    return {
+      showDetail: true,
+      url: {
+        get: "/xz/${className}/get",
+        save: "/xz/${className}/save"
+      },
+      dataInfo: {},
+      rules: {
+    #foreach($column in $columns)
+      #if($column.lowerAttrName!='id'&&$column.lowerAttrName!='created'&&$column.lowerAttrName!='updated')
+        $column.lowerAttrName: [{ required: true, message: "该项为必填" }],
+      #end
+    #end
+  }
+  };
+  },
+  methods: {
+    async save() {
+      await this.$postAction(this.url.save,this.dataInfo);
+      this.$message({
+        showClose: true,
+        message: "操作成功！",
+        type: "success"
+      });
+      this.$emit("close");
+    },
+    async getData() {
+      if (this.params && this.params.id) {
+        //todo  根据id获取表单数据信息
+        let result = await this.$getAction(this.url.get,{ id: this.params.id });
+        this.dataInfo = result;
+      }
+    }
+  },
+  mounted() {
+    this.getData();
+  }
+  };
+</script>
+
+<style>
+</style>
